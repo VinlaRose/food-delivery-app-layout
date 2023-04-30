@@ -83,15 +83,19 @@ export const fakeFetch = (url) => {
   }
 export const ProductProvider = ({children}) =>{
 
-    const [items, setItems] = useState([])
+    const [items, setItems] = useState([]);
+    const [cart, setCarts] = useState([])
 
     const getData = async() => {
         try{
             const response = await fakeFetch( 'https://example.com/api/menu');
             if(response.status === 200){
-                setItems(response.data.menu)
-    
+                setItems(response.data.menu.map((item) => {
+                  return {...item, is_added: false, count: 1}
+                }))
+               
             }
+
         }catch(e){
             console.error(e)
         }
@@ -99,12 +103,98 @@ export const ProductProvider = ({children}) =>{
       useEffect(() => {
         getData();
       },[])
+ 
+    
+    const cartHandler = (selecteditem, id) => {
 
-    
-    
+      if(selecteditem.is_added === false){
+        setCarts(prevCart => [...prevCart, selecteditem]);
+
+      }
+
+
+      const updatedItems = items.map((item) => {
+        if(item.id === id){
+          return {...item, is_added: true}
+        }else{
+          return item
+        }
+      })
+
+      setItems(updatedItems)
+     
+    }
+
+    const cartRemove = (id) => {
+      setCarts(cart.filter((item) => item.id !== id));
+
+      const updatedItems = items.map((item) => {
+        if(item.id === id){
+          return {...item, is_added: false}
+        }else{
+          return item
+        }
+      })
+
+      setItems(updatedItems)
+    }
+
+
+    const addCount = (id) => {
+
+      const updatedCart = cart.map((item) => {
+        if(item.id === id){
+          return {...item, count: item.count+1}
+        }else{
+          return item
+        }
+      })
+
+      setCarts(updatedCart)
+     
+
+    }
+
+    const subtractCount = (id) => {
+
+      const updatedCart = cart.map((item) => {
+        if(item.id === id){
+          return {...item, count: item.count <= 0 ? 0 : item.count-1}
+        }else{
+          return item
+        }
+      })
+
+      setCarts(updatedCart)
+     
+
+    }
+
+  const [couponApplied, setCouponApplied] = useState(false);
+
+  const cartPrice = cart.reduce((acc,curr) => acc + curr.price*curr.count, 0)
+
+
+  const totalPrice = couponApplied ? cartPrice - 5 : cartPrice;
+  
+
+
+    const totalDeliverTime = cart.reduce((acc,curr) => acc + curr.delivery_time, 0)
+
+    const couponHandler = () =>{
+        setCouponApplied(true);
+
+    }
+
+    const undoCoupon = () => {
+      setCouponApplied(false)
+    }
+
+
+  
 
     return (
-        <ProductContext.Provider value={{items}}>
+        <ProductContext.Provider value={{items, cartHandler, cartRemove, addCount, cart, subtractCount, totalDeliverTime,couponHandler, totalPrice, couponApplied, undoCoupon}}>
             {children}
         </ProductContext.Provider>
     )

@@ -14,7 +14,7 @@ export const Menu = () => {
         flexDirection: "row",  flexWrap: "wrap",}}>
                 {
                     items.map((item) => (
-                        <div key = {item.id}><ProductCard {...item}/></div>
+                        <div key = {item.id}><ProductCard {...item} showAdd/></div>
                     ))
                 }
             </ul>
