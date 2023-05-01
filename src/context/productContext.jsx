@@ -159,7 +159,7 @@ export const ProductProvider = ({children}) =>{
 
       const updatedCart = cart.map((item) => {
         if(item.id === id){
-          return {...item, count: item.count <= 0 ? 0 : item.count-1}
+          return {...item, count: item.count <= 1 ? 1 : item.count-1}
         }else{
           return item
         }
@@ -174,12 +174,9 @@ export const ProductProvider = ({children}) =>{
 
   const cartPrice = cart.reduce((acc,curr) => acc + curr.price*curr.count, 0)
 
-
   const totalPrice = couponApplied ? cartPrice - 5 : cartPrice;
   
-
-
-    const totalDeliverTime = cart.reduce((acc,curr) => acc + curr.delivery_time, 0)
+  const totalDeliverTime = cart.reduce((acc,curr) => acc + curr.delivery_time, 0)
 
     const couponHandler = () =>{
         setCouponApplied(true);
@@ -190,11 +187,28 @@ export const ProductProvider = ({children}) =>{
       setCouponApplied(false)
     }
 
+    const [userinput, setInput] = useState(" ")
 
+const inputBar = (event) => {
+  setInput(event.target.value);
+
+
+if(userinput === " "){
+  setItems(items)
+}else{
+  const filterItems  = items.filter(
+    (nameObj) =>
+      nameObj.name.toLowerCase().startsWith(userinput.toLowerCase())
+  );
+  setItems(filterItems)
+
+}
+  
+}
   
 
     return (
-        <ProductContext.Provider value={{items, cartHandler, cartRemove, addCount, cart, subtractCount, totalDeliverTime,couponHandler, totalPrice, couponApplied, undoCoupon}}>
+        <ProductContext.Provider value={{items, cartHandler, cartRemove, addCount, cart, subtractCount, totalDeliverTime,couponHandler, totalPrice, couponApplied, undoCoupon, inputBar}}>
             {children}
         </ProductContext.Provider>
     )

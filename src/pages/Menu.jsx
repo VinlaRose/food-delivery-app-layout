@@ -5,11 +5,13 @@ import { ProductCard } from "../components/ProductCard"
 
 
 export const Menu = () => {
-    const {items} = useContext(ProductContext)
+    const {items, inputBar} = useContext(ProductContext)
     return(
         <div>
             <h1>Menu</h1>
-            <h3>Filters</h3>
+            <div>
+                <input placeholder="Search" onChange={inputBar}/>
+            </div>
             <ul style={{ display: "flex",
         flexDirection: "row",  flexWrap: "wrap",}}>
                 {
