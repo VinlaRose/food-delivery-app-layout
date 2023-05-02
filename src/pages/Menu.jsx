@@ -5,7 +5,7 @@ import { ProductCard } from "../components/ProductCard"
 
 
 export const Menu = () => {
-    const {items, inputBar} = useContext(ProductContext)
+    const {menu, inputBar} = useContext(ProductContext)
     return(
         <div>
             <h1>Menu</h1>
@@ -15,7 +15,7 @@ export const Menu = () => {
             <ul style={{ display: "flex",
         flexDirection: "row",  flexWrap: "wrap",}}>
                 {
-                    items.map((item) => (
+                    menu.map((item) => (
                         <div key = {item.id}><ProductCard {...item} showAdd/></div>
                     ))
                 }

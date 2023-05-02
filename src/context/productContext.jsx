@@ -84,13 +84,17 @@ export const fakeFetch = (url) => {
 export const ProductProvider = ({children}) =>{
 
     const [items, setItems] = useState([]);
-    const [cart, setCarts] = useState([])
+    const [cart, setCarts] = useState([]);
+    const [menu, setMenu] = useState([]);
 
     const getData = async() => {
         try{
             const response = await fakeFetch( 'https://example.com/api/menu');
             if(response.status === 200){
                 setItems(response.data.menu.map((item) => {
+                  return {...item, is_added: false, count: 1}
+                }));
+                setMenu(response.data.menu.map((item) => {
                   return {...item, is_added: false, count: 1}
                 }))
                
@@ -103,6 +107,8 @@ export const ProductProvider = ({children}) =>{
       useEffect(() => {
         getData();
       },[])
+
+      
  
     
     const cartHandler = (selecteditem, id) => {
@@ -112,8 +118,7 @@ export const ProductProvider = ({children}) =>{
 
       }
 
-
-      const updatedItems = items.map((item) => {
+      const updatedItems = menu.map((item) => {
         if(item.id === id){
           return {...item, is_added: true}
         }else{
@@ -121,7 +126,8 @@ export const ProductProvider = ({children}) =>{
         }
       })
 
-      setItems(updatedItems)
+      setMenu(updatedItems);
+      console.log(updatedItems)
      
     }
 
@@ -187,28 +193,24 @@ export const ProductProvider = ({children}) =>{
       setCouponApplied(false)
     }
 
-    const [userinput, setInput] = useState(" ")
+    const [userinput, setInput] = useState("")
 
 const inputBar = (event) => {
   setInput(event.target.value);
+ 
 
-
-if(userinput === " "){
-  setItems(items)
-}else{
-  const filterItems  = items.filter(
-    (nameObj) =>
-      nameObj.name.toLowerCase().startsWith(userinput.toLowerCase())
-  );
-  setItems(filterItems)
-
-}
-  
+        if(userinput.length>1){
+          setMenu(items.filter(
+            (item) =>
+              item.name.toLowerCase().includes(userinput.toLowerCase())))
+        }else{
+         setMenu(items)
+        }
 }
   
 
     return (
-        <ProductContext.Provider value={{items, cartHandler, cartRemove, addCount, cart, subtractCount, totalDeliverTime,couponHandler, totalPrice, couponApplied, undoCoupon, inputBar}}>
+        <ProductContext.Provider value={{items, menu, cartHandler, cartRemove, addCount, cart, subtractCount, totalDeliverTime,couponHandler, totalPrice, couponApplied, undoCoupon, inputBar}}>
             {children}
         </ProductContext.Provider>
     )
